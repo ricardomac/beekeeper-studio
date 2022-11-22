@@ -214,6 +214,15 @@ export default Vue.extend({
           width: 70,
           cssClass: "read-only never-editable",
         },
+        {
+          title: 'Comment',
+          field: 'comment',
+          editor: vueEditor(NullableInputEditorVue),
+          cellEdited: this.cellEdited,
+          headerFilter: true,
+          formatter: this.cellFormatter,
+          editable: this.isCellEditable.bind(this, 'renameColumn')
+        },
         this.editable ? trashButton(this.removeRow) : null
       ].filter((c) => !!c)
       return result.map((col) => {

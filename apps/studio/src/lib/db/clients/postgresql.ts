@@ -538,6 +538,7 @@ export async function listTableColumns(
       is_nullable,
       ordinal_position,
       column_default,
+      col_description((table_schema||'.'||table_name)::regclass::oid, ordinal_position) as "column_comment",
       CASE
         WHEN character_maximum_length is not null  and udt_name != 'text'
           THEN CONCAT(udt_name, concat('(', concat(character_maximum_length::varchar(255), ')')))
@@ -560,6 +561,7 @@ export async function listTableColumns(
     nullable: row.is_nullable === 'YES',
     defaultValue: row.column_default,
     ordinalPosition: Number(row.ordinal_position),
+    comment: _.isEmpty(row.column_comment) ? null : row.column_comment
   }));
 }
 
@@ -582,6 +584,7 @@ export async function listMaterializedViewColumns(conn: Conn, _database: string,
   `
   const params = table ? [schema, table] : []
   const data = await driverExecuteSingle(conn, {query: sql, params});
+
   return data.rows.map((row) => ({
     schemaName: row.nspname,
     tableName: row.relname,
